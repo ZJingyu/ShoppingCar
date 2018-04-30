@@ -1,0 +1,33 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+a {
+    text-decoration: none;
+    color: #333333;
+}
+a:hover{
+    color: #C81623;
+}
+.login {
+
+    height: 350px;
+    position: absolute;
+    width: 400px;
+    left: 50%;
+    top: 50%;
+    margin-left: -200px;
+    margin-top: -200px;
+    background-color: azure;
+}
+.head{
+    display: block;
+    border-bottom: 0.5px solid blue;
+    height: 50px;
+    padding-left: 10px;
+    font: bolder 18px/50px "新宋体";
+}
+.head span:first-child{
+    padding-right: 5px;
+    border-right: 1px solid black;
+}

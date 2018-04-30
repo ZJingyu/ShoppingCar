@@ -1,0 +1,60 @@
+{% extends 'shopping/base.html' %}
+
+{% block css %}
+    <title>用户登录界面</title>
+    <style type="text/css">
+        .user, .passwd{
+            display: block;
+            height: 50px;
+            margin: 30px 0;
+            font: bolder 16px/50px "serif";
+            padding-left: 10px;
+        }
+        .user span, .passwd span{
+            float: left;
+            margin-left: 30px;
+        }
+
+        .user input, .passwd input{
+            float: right;
+            height: 30px;
+            width: 240px;
+            margin-top: 6px;
+            margin-right: 50px;
+            font: normal 16px/30px "serif";
+            color: blue;
+        }
+        .submit {
+            float: left;
+            height: 40px;
+            width: 310px;
+            margin-left: 40px;
+            margin-top: 20px;
+            cursor: pointer;
+            font: normal 18px/40px "serif";
+            color: cadetblue;
+            border: 0px;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="login">
+        <div class="head">
+            <span><a href="javascript:;">用户登录</a></span>
+            <span><a href="{% url 'register' %}">注册</a></span>
+        </div>
+
+        <form action="{% url 'login' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="user">
+                <span>用户名</span>
+                <input type="text" name="username"/>
+            </div>
+            <div class="passwd">
+                <span>密码</span>
+                <input type="password" name="password"/>
+            </div>
+            <input type="submit" value="登录" class="submit"/>
+        </form>
+    </div>
+{% endblock %}

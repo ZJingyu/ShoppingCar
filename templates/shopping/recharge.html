@@ -1,0 +1,91 @@
+{% extends 'shopping/base.html' %}
+
+{% block css %}
+    <title>用户充值</title>
+    <script type="text/javascript" src="/static/jquery-1.7.2.min.js"></script>
+    <style type="text/css">
+        .user, .passwd{
+            display: block;
+            height: 50px;
+            margin: 30px 0;
+            font: bolder 16px/50px "serif";
+            padding-left: 10px;
+        }
+        .user span, .passwd span{
+            float: left;
+            margin-left: 20px;
+        }
+
+        .user input, .passwd input{
+            float: right;
+            height: 30px;
+            width: 240px;
+            margin-top: 6px;
+            margin-right: 50px;
+            font: normal 16px/30px "serif";
+            color: blue;
+        }
+        .submit {
+            float: left;
+            height: 40px;
+            width: 310px;
+            margin-left: 40px;
+            margin-top: 20px;
+            cursor: pointer;
+            font: normal 18px/40px "serif";
+            color: cadetblue;
+            border: 0px;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="login">
+        <form action="{% url 'recharge' %}" method="post">
+            {% csrf_token %}
+            <div class="user">
+                <span>充值金额</span>
+                <input type="text" name="money"/>
+            </div>
+            <div class="passwd">
+                <span>用户密码</span>
+                <input type="password" name="password"/>
+            </div>
+            <input type="submit" value="确认" class="submit"/>
+        </form>
+    </div>
+    <script type="text/javascript">
+        // 对充值金额进行校验
+        // 这里只是模拟了银行卡号和支付密码
+        $(":text").blur(function () {
+            // 对input的内容进行数字验证
+            if(this.value.length==1){
+                this.value=this.value.replace(/[^1-9]/g,'')
+            }else{
+                this.value=this.value.replace(/\D/g,'')
+            }
+        });
+
+        // 对密码进行验证
+        $(":password").blur(function () {
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                data: {password: $(this).val()},
+                url: "/shopping/recharge_confirm/",
+                success: function (msg) {
+                    var flag = false;
+                    if (parseInt(msg) === 1) {
+                        alert("充值成功！");
+                        flag = true
+                    }else {
+                        alert("充值失败！")
+                    }
+                    $(":submit").click(function () {
+                        return flag;
+                    });
+                }
+            })
+        });
+        $(":submit").submit(function () {return false;});
+    </script>
+{% endblock %}

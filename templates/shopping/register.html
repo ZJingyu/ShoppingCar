@@ -1,0 +1,135 @@
+{% extends 'shopping/base.html' %}
+
+{% block css %}
+    <title>用户登录界面</title>
+    <script type="text/javascript" src="/static/jquery-1.7.2.min.js"></script>
+    <style type="text/css">
+        .user, .passwd{
+            display: block;
+            height: 50px;
+            margin: 20px 0;
+            font: bolder 16px/50px "serif";
+            padding-left: 10px;
+        }
+        .user span, .passwd .init{
+            float: left;
+            margin-left: 20px;
+        }
+
+        .user input, .passwd input{
+            float: left;
+            height: 30px;
+            width: 180px;
+            margin-top: 6px;
+            font: normal 16px/30px "serif";
+            color: blue;
+        }
+        .user input{
+            margin-left: 50px;
+        }
+        .passwd input{
+            margin-left: 33px;
+        }
+        .submit {
+            float: left;
+            height: 40px;
+            width: 330px;
+            margin-left: 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            font: normal 18px/40px "serif";
+            color: cadetblue;
+            border: 0;
+        }
+        .insert{
+            float: left;
+            font: normal 12px/30px "serif";
+            margin-top: 10px;
+            height: 30px;
+            text-align: center;
+            color: #C81623;
+            margin-left: 5px;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="login">
+        <div class="head">
+            <span><a href="javascript:;">用户注册</a></span>
+            <span><a href="{% url 'login' %}">返回登录</a></span>
+        </div>
+
+        <form action="{% url 'register_success' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="user">
+                <span class="init">用户名</span>
+                <input type="text" name="username"/>
+                <span class="insert" style="margin-left: 5px"></span>
+            </div>
+            <div class="passwd">
+                <span class="init">用户密码</span>
+                <input type="password" name="password"/>
+                <span class="insert"></span>
+            </div>
+            <div class="passwd">
+                <span class="init">重复密码</span>
+                <input type="password" name="password"/>
+                <span class="insert"></span>
+            </div>
+            <input type="submit" value="确认注册" class="submit"/>
+        </form>
+    </div>
+    <script type="text/javascript">
+
+        var flag_username = false;
+        $(":text").blur(function () {
+            // 这里没有对用户名进行限制，但需要对用户名进行验证
+            if($.trim($(this).val()) === ""){
+                $(".insert:first").text("不能为空").css({color: "red"});
+            }else {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    data: {user: $(this).val()},
+                    url: '/shopping/register/',
+                    async: false,
+                    success:function (msg) {
+                        if(parseInt(msg) === 1){
+                            $(".insert:first").text("可以注册").css({color: "blue"});
+                            flag_username = true;
+                        }else {
+                            $(".insert:first").text("已被注册").css({color: "red"});
+                            flag_username = false;
+                        }
+                    }
+                });
+            }
+        });
+        $(":password").blur(function () {
+            if ($.trim($(this).val()) !== ""){
+                $(this).next().text("√").css({color: "blue"});
+            }else {
+                $(this).next().text("不能为空").css({color: "red"});
+            }
+        });
+        // 这里没有对用户密码进行限制，但需要进行一致性和非空验证
+
+        $(":submit").click(function () {
+            var flag = false;
+            var password1 = $(":password:first").val();
+            var password2 = $(":password:last").val();
+            if (password1 === password2 && $.trim(password1) !== ""){
+                if(flag_username === true){
+                    alert("注册成功!");
+                    flag = true;
+                }else {
+                    flag = false;
+                }
+            }else{
+                $(":password:last").next().text("密码不一致").css({color: "red"});
+                flag = false;
+            }
+            return flag;
+        });
+    </script>
+{% endblock %}

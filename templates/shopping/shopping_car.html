@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cat</title>
+    <script type="text/javascript" src="/static/jquery-1.7.2.min.js"></script>
+    <script src="/static/jquery.cookie.js"></script>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        a {
+            text-decoration: none;
+            color: #333333;
+        }
+        a:hover{
+            color: #C81623;
+        }
+        .login {
+            height: 400px;
+            position: absolute;
+            width: 400px;
+            left: 50%;
+            top: 15%;
+            margin-left: -200px;
+            background-color: azure;
+            overflow: auto;
+            border-bottom: 1px solid blue;
+        }
+        .head{
+            display: block;
+            border-bottom: 1px solid blue;
+            height: 50px;
+            padding-left: 10px;
+            font: bolder 18px/50px "新宋体";
+        }
+        .head span:first-child{
+            padding-right: 5px;
+            border-right: 1px solid black;
+        }
+
+        .record-title, .record-content {
+            display: block;
+            height: 40px;
+            margin: 10px 0;
+        }
+        .record-title{
+            border-bottom: 0.5px solid blue;
+        }
+        .record-title span{
+            float: left;
+            height: 30px;
+            margin: 5px 20px;
+            font: normal 16px/30px "YuMincho";
+        }
+        .record-title span:last-child{
+            float: right;
+        }
+        .record-content input, .record-content span{
+            float: left;
+            height: 30px;
+            margin: 5px 35px;
+            font: normal 14px/30px "Sans-Serif";
+        }
+        .record-content span:last-child{
+            float: right;
+            {#color: #C81623;#}
+        }
+        .purchase{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 40px;
+            width: 400px;
+            margin-left: -200px;
+            margin-top: 152px;
+            {#background-color: cornflowerblue;#}
+            line-height: 40px;
+        }
+        .purchase span:first-child{
+            float: left;
+            margin-left: 10px;
+        }
+        .purchase span:last-child{
+            float: right;
+            margin-right: 10px;
+        }
+        .purchase font{
+            color: #C81623;
+        }
+        .purchase:hover{
+            color: #C81623;
+        }
+        </style>
+</head>
+<body>
+    <div class="login">
+        <div class="head">
+            <span><a href="javascript:;">购物车</a></span>
+            <span><a href="javascript:;">消费记录</a></span>
+        </div>
+        <div class="record-title">
+            <span>勾选</span>
+            <span>商品名称</span>
+            <span>商品数量</span>
+            <span>商品价格</span>
+        </div>
+        {% for record in car %}
+            <div class="record-content">
+                <input type="checkbox" name="box" value="{{ record.id }}">
+                <span>{{ record.name }}</span>
+                <span>{{ record.count }}</span>
+                <span>{{ record.price }}</span>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="purchase">
+        <span>消费金额总计<font>【0】</font></span>
+        <span>确认支付</span>
+    </div>
+    <script>
+        $(function () {
+            // 获取已选取的商品的id，以及计算已选取的商品总价
+            var id = [];
+            var price = 0;
+            // 每次刷新或进入页面时，都要把所有的checked去掉勾选，以保证id和price计算正确
+            $(".record-content :checkbox").attr("checked", false);
+
+            $(".record-content :checkbox").click(function () {
+                // 点击之后如果是checked，说明点击之前是null，因此id和price都是要添加的
+                if($(this).attr("checked") === "checked") {
+                    id.push(parseInt($(this).val()));
+                    $(this).attr({checked: "checked"});
+                    price += parseInt($(this).siblings().last().text());
+                    console.log(id, price);
+                }else {
+                    // 点击之后如果是null，说明点击之前是checked，因此id和price都是要去掉除的
+
+                    var item = parseInt($(this).val());
+                    id_new = [];
+                    for(var i=0;i<id.length;i++){
+                        if(id[i] !== item){
+                            id_new.push(id[i])
+                        }
+                    }
+                    id = id_new;
+                    // console.log(id, price);
+                    price -= parseInt($(this).siblings().last().text());
+                    $(this).attr("checked", false);
+                }
+                // 把总金额写到font里
+                $(".purchase font").text("【" + price + "】");
+            });
+
+            // 点击确认按钮发送id，后台做三件事情
+            // 后台根据id从购物车中查询相应的记录并删除，在Record中添加该用户的消费记录，并从用户账户中扣除相应的金额
+            $(".purchase span:last").on("click", function () {
+                console.log(id, price);
+                if(price > 0){
+                    $.ajax({
+                        type: "POST",
+                        dataTpye: "json",
+                        contentType : "application/x-www-form-urlencoded;charset=UTF-8",
+                        data: {id: id, price:price},
+                        url: "/shopping/consume/",
+                        success: function (msg) {
+                            console.log(msg, typeof msg);
+                            // 在这一步要清除id、price,并刷新页面；后台去清除数据了，这里刷新页面即可
+                            if(parseInt(msg) === 0){
+                                // 说明余额不足，需要充值
+                                alert("余额不足!请充值!");
+                                // 跳转到充值页面
+                                window.location.href = "/shopping/recharge/"
+                            }else {
+                                // 扣款成功!返回购物车
+                                alert("成功购买！");
+                                window.location.href="/shopping/shopping_purchase/"
+                            }
+                        }
+                    })
+                }
+            })
+        });
+    </script>
+</body>
+</html>

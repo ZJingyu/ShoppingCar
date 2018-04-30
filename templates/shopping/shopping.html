@@ -1,0 +1,163 @@
+{% extends 'shopping/base.html' %}
+
+{% block css %}
+    <title>oldboy</title>
+    <script type="text/javascript" src="/static/jquery-1.7.2.min.js"></script>
+    <script src="/static/jquery.cookie.js"></script>
+    <script type="text/javascript">var user={{ user|safe }};</script>
+    <style type="text/css">
+        .head{
+            height: 30px;
+            background-color: cadetblue;
+            font: normal 16px/30px "sans-serif";
+        }
+        .head .head-span{
+            float: right;
+        }
+        .head .head-span span {
+            color: red;
+            border: 0;
+        }
+        .head .head-span .welcome{
+            color: #333333;
+        }
+        .head .head-span a {
+            margin: 0 5px;
+        }
+        .goods{
+            position: absolute;
+            width: 600px;
+            top: 20%;
+            left: 50%;
+            margin-left: -300px;
+            border-top: 1px solid blue;
+        }
+        .goods .good-message {
+            height: 50px;
+            font: bolder 20px/50px "YuMincho";
+            text-align: center;
+            border-bottom: 1px solid blue;
+        }
+        .goods .good-body {
+            height: 295px;
+        }
+        .goods .good-body .good-title{
+            height: 45px;
+        }
+        .goods .good-title span{
+            float: left;
+            height: 35px;
+            margin: 5px 35px;
+            font: bolder 18px "YuMincho";
+            color: cornflowerblue;
+        }
+        .goods .good-display {
+            display: block;
+            height: 40px;
+            margin: 20px 0;
+        }
+        .goods .good-add {
+            border-top: 1px solid blue;
+            padding-left: 10px;
+            padding-top: 5px;
+            font: normal 12px "YuGothic";
+            color: blue;
+        }
+        .goods .good-display span{
+            float: left;
+            height: 30px;
+            margin: 5px 60px;
+            font: normal 16px/30px "YuMincho";
+        }
+        .goods .good-display span:last-child{
+            float: right;
+            margin-right: 60px;
+        }
+        .goods .good-count {
+            height: 50px;
+            margin-top: 50px;
+            line-height: 50px;
+            border-top: 1px solid blue;
+            border-bottom: 1px solid blue;
+        }
+        .goods .good-count {
+            height: 40px;
+            line-height: 40px;
+        }
+        .goods .good-count span{
+            font: normal 16px "YuGothic";
+        }
+        .good-selected{
+            height: 50px;
+            line-height: 50px;
+        }
+        .first{
+            color: red;
+            font-family: bolder;
+        }
+        .good-selected input{
+            width: 40px;
+            height: 20px;
+            font: normal 16px/20px "YuKyokasho";
+            color: blue;
+            text-align: center;
+        }
+        .second{
+            display: inline-block;
+            font: bolder 24px "sans-serif";
+            padding: 0 3px;
+            width: 20px;
+            text-align: center;
+
+        }
+        .second:last-child{
+            font-size: 20px;
+        }
+        .second:hover{
+            color:red;
+            cursor: pointer;
+
+        }
+        .good-count a {
+            float: right;
+            margin-right: 15px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <input type="hidden" id="refreshed" value="no">
+    <div class="head">
+        <span class="head-span">
+            <span class="welcome">欢迎您，<font>{{ user }}</font>！</span>|
+            <a>购物车<span>0</span></a>|
+            <a href="javascript:;">[退出]</a>
+        </span>
+    </div>
+    <div class="goods">
+        <div class="good-message">商品信息展示</div>
+        <div class="good-body">
+            <div class="good-title">
+                <span>商品编号</span>
+                <span>商品名称</span>
+                <span>商品价格</span>
+                <span>商品数量</span>
+            </div>
+            {% for good in goods %}
+                <div class="good-display"><a href="#">
+                    <span>{{ good.number }}</span>
+                    <span>{{ good.name }}</span>
+                    <span>{{ good.price }}</span>
+                    <span>{{ good.count }}</span>
+                </a></div>
+            {% endfor %}
+            <div class="good-add">
+                Tips:双击选择购买商品，点击右上角购物车进行支付购买
+            </div>
+        </div>
+        <div class="good-count">
+            <!--购买商品并进行验证-->
+        </div>
+    </div>
+    <script type="text/javascript" src="/static/shopping/js/shopping.js"></script>
+{% endblock %}
